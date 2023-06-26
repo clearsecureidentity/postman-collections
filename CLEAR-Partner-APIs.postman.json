@@ -1,0 +1,243 @@
+{
+	"info": {
+		"name": "Powered by CLEAR: Integration APIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "3 - AUTHORIZE",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"if(null != jsonData.access_token){\r",
+							"    pm.collectionVariables.set(\"access_token\", jsonData.access_token);\r",
+							"}\r",
+							"\r",
+							"if(null != jsonData.refresh_token){\r",
+							"    pm.collectionVariables.set(\"refresh_token\", jsonData.refresh_token);\r",
+							"}\r",
+							"\r",
+							"if(null != jsonData.id_token) {\r",
+							"    pm.collectionVariables.set(\"id_token\", jsonData.id_token);\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CLEAR-CorrelationInfo",
+						"value": "[sessionId='SandboxSession'], [requestId='SandboxRequestID'], [clientId='{{AUTH_CLIENT_ID}}'], [deviceId='SandboxDevice']",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "authorization_code",
+							"type": "text"
+						},
+						{
+							"key": "code",
+							"value": "{{code}}",
+							"type": "text"
+						},
+						{
+							"key": "redirect_uri",
+							"value": "{{AUTH_REDIRECT_URI}}",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{AUTH_CLIENT_ID}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{AUTH_CLIENT_SECRET}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{AUTH_URL}}/realms/{{AUTH_NAMESPACE}}/protocol/openid-connect/token",
+					"host": [
+						"{{AUTH_URL}}"
+					],
+					"path": [
+						"realms",
+						"{{AUTH_NAMESPACE}}",
+						"protocol",
+						"openid-connect",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5 -  SHARE-DATA",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true,
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					},
+					{
+						"key": "x-api-key",
+						"value": "{{API_KEY}}",
+						"type": "text"
+					},
+					{
+						"key": "X-CLEAR-CorrelationInfo",
+						"value": "[sessionId='SandboxSession'], [requestId='SandboxRequestID'], [clientId='{{AUTH_CLIENT_ID}}'], [deviceId='SandboxDevice']",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{DATA_SERVICE_URL}}/auth/v1/users/{{ASID}}",
+					"host": [
+						"{{DATA_SERVICE_URL}}"
+					],
+					"path": [
+						"auth",
+						"v1",
+						"users",
+						"{{ASID}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"var uuid = require('uuid');",
+					"var Header = require('postman-collection').Header;",
+					"",
+					"",
+					"var correlationInfo = \"[sessionId='\" + uuid.v4() + \"'],[requestId='ABCDEF'],[clientId='\" + uuid.v4() + \"'],[deviceId='\" + uuid.v4() + \"']\";",
+					"",
+					"// pm.request.headers.add(new Header(\"X-CLEAR-CorrelationInfo: \" + correlationInfo));",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "code",
+			"value": "Enter Auth Code",
+			"type": "string"
+		},
+		{
+			"key": "AUTH_CLIENT_ID",
+			"value": "Enter ClientID"
+		},
+		{
+			"key": "AUTH_CLIENT_SECRET",
+			"value": "Enter ClientSecret",
+			"type": "string"
+		},
+		{
+			"key": "AUTH_REDIRECT_URI",
+			"value": "Enter Redirect (https://www.clearme.com/)",
+			"type": "string"
+		},
+		{
+			"key": "API_KEY",
+			"value": "Enter API Key",
+			"type": "string"
+		},
+		{
+			"key": "ASID",
+			"value": "Enter Preferred Username (from JWT)"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refresh_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "id_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "AUTH_URL",
+			"value": "Enter Auth URL (PIE or PROD)",
+			"type": "string"
+		},
+		{
+			"key": "DATA_SERVICE_URL",
+			"value": "Enter Data URL (PIE or PROD)",
+			"type": "string"
+		},
+		{
+			"key": "AUTH_NAMESPACE",
+			"value": "clear-authentication",
+			"type": "string"
+		}
+	]
+}
